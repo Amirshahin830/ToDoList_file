@@ -1,3 +1,1 @@
-false;/;;khane dari;/;;2025-05-18 08:44:13
-false;/;;bikari gozarandan;/;;2025-05-18 08:44:29
-true;/;;arr zadan;/;;2025-05-18 08:44:45
+true	dfdd	2025-05-18 09:06

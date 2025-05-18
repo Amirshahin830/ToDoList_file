@@ -1,10 +1,5 @@
 import java.io.File;
-import java.nio.file.*;
-
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
-import java.io.IOException;
-import java.sql.Time;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -15,16 +10,13 @@ class Job{
     public String title;
     public String created;
     Job(boolean isDone,String title,String created){
-        if(isDone)
-            this.isDone = true;
-        else
-            this.isDone = false;
+        this.isDone = isDone;
         this.title=title;
         if(created!=null)
             this.created=created;
         else {
             LocalDateTime localDateTime = LocalDateTime.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
             String formattedDate = localDateTime.format(formatter);
             this.created=formattedDate;
         }
@@ -37,15 +29,15 @@ class Job{
 
 class ToDoList {
     public ArrayList<Job> jobs = new ArrayList<>();
-
+    private final String path = "test.txt";
     ToDoList() {
         try {
-            File file = new File("test.txt");
+            File file = new File(path);
             if (file.exists()) {
                 Scanner sc = new Scanner(file);
                 while (sc.hasNextLine()) {
                     String temp_st = sc.nextLine();
-                    String[] temp_arr = temp_st.split(";/;;");
+                    String[] temp_arr = temp_st.split("\t");
                     jobs.add(new Job(Boolean.valueOf(temp_arr[0]), temp_arr[1], temp_arr[2]));
                 }
             }
@@ -57,16 +49,12 @@ class ToDoList {
         }
     }
 
-    void addjob(String title)
-    {
-        jobs.add(new Job(false,title,null));
+    void save(){
         try {
-            File file = new File("test.txt");
-            if (file.exists())
-                file.delete();
-            try (FileWriter fileWriter = new FileWriter("test.txt")) {
+            File file = new File(path);
+            try (FileWriter fileWriter = new FileWriter(path,false)) {
                 for (Job job : jobs) {
-                    fileWriter.write(job.isDone + ";/;;" + job.title + ";/;;" + job.created + "\n");
+                    fileWriter.write(job.isDone + "\t" + job.title + "\t" + job.created + "\n");
                 }
             }
         }
@@ -74,38 +62,20 @@ class ToDoList {
             System.out.println(" Error ! " + e);
         }
     }
+
+    void addjob(String title)
+    {
+        jobs.add(new Job(false,title,null));
+        this.save();
+    }
     void done(int index){
         jobs.get(index).checkout();
-        try {
-            File file = new File("test.txt");
-            if (file.exists())
-                file.delete();
-            try (FileWriter fileWriter = new FileWriter("test.txt")) {
-                for (Job job : jobs) {
-                    fileWriter.write(job.isDone + ";/;;" + job.title + ";/;;" + job.created + "\n");
-                }
-            }
-        }
-        catch (Exception e){
-            System.out.println(" Error ! " + e);
-        }
+        this.save();
     }
     void delete(int index)
     {
         jobs.remove(index);
-        try {
-            File file = new File("test.txt");
-            if (file.exists())
-                file.delete();
-            try (FileWriter fileWriter = new FileWriter("test.txt")) {
-                for (Job job : jobs) {
-                    fileWriter.write(job.isDone + ";/;;" + job.title + ";/;;" + job.created + "\n");
-                }
-            }
-        }
-        catch (Exception e){
-            System.out.println(" Error ! " + e);
-        }
+        this.save();
     }
 
 
